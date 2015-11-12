@@ -1,0 +1,9 @@
+project/project
+project/target/
+target/
+*~
+.idea
+*.lck
+*.log
+metastore_db/
+test
