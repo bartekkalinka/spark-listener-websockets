@@ -1,19 +1,20 @@
 package pl.bka.spark
 
 import org.apache.spark.scheduler.{SparkListenerStageCompleted, SparkListener, SparkListenerJobStart}
-import java.io.File
+import java.io.PrintWriter
 
 class CustomSparkListener extends SparkListener {
 
-  private def createTestFile = new File("./test").createNewFile
+  private def message(msg: String) = {
+  	println(msg)
+  	new PrintWriter("./test") { write(msg); close }
+  }
 
   override def onJobStart(jobStart: SparkListenerJobStart) {
-    println(s"Job started with ${jobStart.stageInfos.size} stages: $jobStart")
-    createTestFile
+  	message(s"Job started with ${jobStart.stageInfos.size} stages: $jobStart")
   }
 
   override def onStageCompleted(stageCompleted: SparkListenerStageCompleted): Unit = {
-    println(s"Stage ${stageCompleted.stageInfo.stageId} completed with ${stageCompleted.stageInfo.numTasks} tasks.")
-    createTestFile
+    message(s"Stage ${stageCompleted.stageInfo.stageId} completed with ${stageCompleted.stageInfo.numTasks} tasks.")
   }
 }

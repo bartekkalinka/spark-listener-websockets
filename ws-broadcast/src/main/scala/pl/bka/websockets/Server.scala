@@ -29,14 +29,18 @@ class WebSocketServer extends Actor with ActorLogging {
       subscribers += subscriber
       log.debug(s"$name joined!")
     case Check() =>
-      val b = Broadcast(if(checkIfFileExists) "it's there!" else "no file")
-      subscribers.foreach(_ ! b.copy(text = counter + ": " + b.text))
+      val b = Broadcast(getMessage.map(counter + ": " + _).getOrElse(counter.toString))
+      subscribers.foreach(_ ! b)
       counter += 1
     case ParticipantLeft(person) => log.debug(s"$person left!")
     case Terminated(sub)         => subscribers -= sub // clean up dead subscribers
   }
 
-  private def checkIfFileExists: Boolean = new File("../spark-listener/test").exists
+  private def getMessage: Option[String] = {
+    val path = "../spark-listener/test"
+    val file = new File(path)
+    if(file.exists) Some(scala.io.Source.fromFile(path).mkString) else None
+  }
 }
 
 object Main {
