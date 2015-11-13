@@ -17,7 +17,7 @@ class Webservice(gameActor: ActorRef)(implicit fm: Materializer, system: ActorSy
       pathSingleSlash {
         getFromResource("webapp/index.html")
       } ~
-        path("game") {
+        path("logs_broadcast") {
           parameter('name) { name =>
             handleWebsocketMessages(websocketFlow(sender = name))
           }

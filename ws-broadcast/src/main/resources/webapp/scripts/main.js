@@ -1,7 +1,7 @@
 "use strict";
 
 $(document).ready(function() {
-var wsUri = "ws://localhost:8008/game?name=aaa";
+var wsUri = "ws://localhost:8008/logs_broadcast?name=aaa";
 var websocket;
 
 // INIT MODULE

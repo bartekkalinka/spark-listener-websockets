@@ -45,7 +45,12 @@ object FileCommunication {
 
   def getMessage: Option[String] = {
     val file = new File(filePath)
-    if(file.exists) Some(scala.io.Source.fromFile(filePath).mkString) else None
+    if(file.exists) {
+      val testTxtSource = scala.io.Source.fromFile(filePath)
+      val str = testTxtSource.mkString
+      testTxtSource.close
+      Some(str)
+    } else None
   }
 
   def rmFile = {
