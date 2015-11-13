@@ -29,17 +29,28 @@ class WebSocketServer extends Actor with ActorLogging {
       subscribers += subscriber
       log.debug(s"$name joined!")
     case Check() =>
-      val b = Broadcast(getMessage.map(counter + ": " + _).getOrElse(counter.toString))
+      val msg = FileCommunication.getMessage.map(counter + "<br>" + FileCommunication.formatHtml(_)).getOrElse(counter.toString)
+      val b = Broadcast(msg)
       subscribers.foreach(_ ! b)
       counter += 1
     case ParticipantLeft(person) => log.debug(s"$person left!")
     case Terminated(sub)         => subscribers -= sub // clean up dead subscribers
   }
+}
 
-  private def getMessage: Option[String] = {
-    val path = "../spark-listener/test"
-    val file = new File(path)
-    if(file.exists) Some(scala.io.Source.fromFile(path).mkString) else None
+object FileCommunication {
+  val filePath = "../spark-listener/test"
+
+  def formatHtml(text: String): String = text.split('\n').mkString("<br>")
+
+  def getMessage: Option[String] = {
+    val file = new File(filePath)
+    if(file.exists) Some(scala.io.Source.fromFile(filePath).mkString) else None
+  }
+
+  def rmFile = {
+    val file = new File(filePath)
+    if (file.exists) file.delete()
   }
 }
 
@@ -47,6 +58,8 @@ object Main {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
+
+    FileCommunication.rmFile
 
     val server = system.actorOf(WebSocketServer.props(), "websocket")
 
