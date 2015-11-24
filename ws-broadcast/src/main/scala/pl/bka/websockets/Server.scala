@@ -33,7 +33,6 @@ class WebSocketServer extends Actor with ActorLogging {
       val b = Broadcast(msg)
       subscribers.foreach(_ ! b)
       counter += 1
-    case ParticipantLeft(person) => log.debug(s"$person left!")
     case Terminated(sub)         => subscribers -= sub // clean up dead subscribers
   }
 }
